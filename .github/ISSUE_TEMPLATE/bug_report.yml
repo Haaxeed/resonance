@@ -1,0 +1,44 @@
+name: Signaler un bug
+description: Créer un rapport pour nous aider à améliorer Resonance.
+title: '[Bug] '
+labels: ['bug']
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description du bug
+      description: Décris clairement ce qui ne va pas.
+      placeholder: Quand je clique sur ..., il se passe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Étapes pour reproduire
+      description: Liste les étapes pour reproduire le bug.
+      placeholder: |
+        1. Ouvrir l'app
+        2. Aller dans ...
+        3. Cliquer sur ...
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Version de Resonance (visible dans les réglages ou le nom de l'installateur).
+      placeholder: ex. v0.6.0
+
+  - type: input
+    id: os
+    attributes:
+      label: Système d'exploitation
+      placeholder: ex. Windows 11 23H2
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / captures d'écran
+      description: Copie-colle des messages d'erreur ou ajoute des captures.

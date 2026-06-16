@@ -1,0 +1,26 @@
+name: Demande de fonctionnalité
+description: Suggérer une nouvelle fonctionnalité pour Resonance.
+title: '[Feature] '
+labels: ['enhancement']
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Décris la fonctionnalité que tu aimerais voir.
+      placeholder: Je voudrais pouvoir ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: usecase
+    attributes:
+      label: Use case
+      description: Pourquoi en as-tu besoin ? Dans quel contexte ?
+      placeholder: Quand je stream, j'ai besoin de ...
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives envisagées
+      description: As-tu déjà essayé une autre solution ?
