@@ -41,7 +41,7 @@ Elle repose sur un **moteur audio Rust/WASAPI** et une interface **React/Tailwin
 
 ## Téléchargement
 
-Rends-toi sur la page [Releases](https://github.com/TON_PSEUDO_GITHUB/resonance/releases) et télécharge le dernier installateur Windows :
+Rends-toi sur la page [Releases](https://github.com/Haaxeed/resonance/releases) et télécharge le dernier installateur Windows :
 
 - `Resonance_x64-setup.exe` (installateur NSIS)
 - `Resonance_x64.msi` (installateur MSI)
@@ -58,7 +58,7 @@ Rends-toi sur la page [Releases](https://github.com/TON_PSEUDO_GITHUB/resonance/
 
 ```bash
 # 1. Cloner le repo
-git clone https://github.com/TON_PSEUDO_GITHUB/resonance.git
+git clone https://github.com/Haaxeed/resonance.git
 cd resonance
 
 # 2. Installer les dépendances
@@ -96,7 +96,7 @@ Si tu aimes Resonance, tu peux soutenir le projet :
 
 - ⭐ Donner une étoile au repo.
 - ☕ [Offrir un café]()
-- 🐞 [Signaler un bug](https://github.com/TON_PSEUDO_GITHUB/resonance/issues)
+- 🐞 [Signaler un bug](https://github.com/Haaxeed/resonance/issues)
 
 ## License
 
