@@ -2,7 +2,7 @@ import { useAppStore } from "@/store/useAppStore";
 import type { AppSettings } from "@/types";
 import { eventToShortcut, shortcutHasModifier, shortcutLooksReservedOnWindows } from "@/lib/shortcuts";
 import { cn } from "@/lib/utils";
-import { Info, Keyboard, Headphones, RadioTower, Save, Share2, Volume2 } from "lucide-react";
+import { Info, Keyboard, Headphones, RadioTower, Save, Share2, Volume2, Coffee, Heart } from "lucide-react";
 import { useState, useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
 
@@ -253,6 +253,31 @@ export default function SettingsPage() {
               className="premium-checkbox"
             />
           </SettingRow>
+        </div>
+      </div>
+
+      <div className="glass-card rounded-[28px] p-5">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Soutenir</h2>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          Resonance est gratuit et open source. Si l'app t'est utile, un petit café fait toute la différence.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <a
+            href="https://ko-fi.com/Haaxeed"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-2xl bg-amber-500/15 px-5 py-3 text-sm font-semibold text-amber-300 transition hover:bg-amber-500/25"
+          >
+            <Coffee size={18} /> Offrir un café sur Ko-fi
+          </a>
+          <a
+            href="https://github.com/Haaxeed/resonance"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-background/55 px-5 py-3 text-sm font-semibold text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+          >
+            <Heart size={18} /> Mettre une étoile sur GitHub
+          </a>
         </div>
       </div>
 

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resonance — Soundboard pour Windows</title>
+  <meta name="description" content="Resonance est une soundboard desktop moderne pour Windows. Pads circulaires, routing audio avancé, Discord Rich Presence. Gratuit et open source.">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: '#0a0a14',
+            surface: '#121224',
+            card: '#1a1a32',
+            border: '#28284a',
+            primary: '#8b5cf6',
+            accent: '#c084fc',
+            text: '#e4e4f0',
+            muted: '#8888AA',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+    body { font-family: 'Inter', system-ui, sans-serif; background: #0a0a14; color: #e4e4f0; }
+    .glow { box-shadow: 0 0 60px rgba(139, 92, 246, 0.3); }
+    .glow-sm { box-shadow: 0 0 20px rgba(139, 92, 246, 0.2); }
+    .glass { background: rgba(26, 26, 50, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(139, 92, 246, 0.15); }
+    .glass-hover:hover { border-color: rgba(139, 92, 246, 0.4); box-shadow: 0 0 30px rgba(139, 92, 246, 0.2); }
+    .text-gradient { background: linear-gradient(135deg, #8b5cf6, #c084fc, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-glow { background: radial-gradient(ellipse 80% 80% at 50% 0%, rgba(139, 92, 246, 0.15), transparent); }
+    html { scroll-behavior: smooth; }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- Hero -->
+  <section class="hero-glow flex flex-col items-center justify-center px-6 py-24 text-center">
+    <img src="assets/wordmark.png" alt="Resonance" class="mb-8 h-auto w-full max-w-lg" draggable="false">
+    <p class="mb-2 text-xl font-medium text-muted sm:text-2xl">Le soundboard des créateurs</p>
+    <p class="mb-10 max-w-lg text-sm text-muted sm:text-base">Pads circulaires, routing audio avancé, Discord Rich Presence. Gratuit, open source, sans pub.</p>
+    <a href="https://github.com/Haaxeed/resonance/releases/latest" class="glass glow-sm inline-flex items-center gap-3 rounded-2xl px-8 py-4 text-lg font-bold text-white transition hover:scale-105 active:scale-95">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Télécharger pour Windows
+    </a>
+    <p class="mt-4 text-xs text-muted">Windows 10/11 · 64 bits · Gratuit</p>
+  </section>
+
+  <!-- Screenshot banner -->
+  <section class="px-6 pb-20">
+    <div class="mx-auto max-w-4xl">
+      <img src="assets/banner.png" alt="Resonance Board" class="glass w-full rounded-3xl" draggable="false">
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="px-6 pb-24">
+    <div class="mx-auto max-w-5xl">
+      <h2 class="mb-12 text-center text-3xl font-extrabold tracking-tight sm:text-4xl">Fait pour les <span class="text-gradient">streamers & gamers</span></h2>
+      
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Feature 1 -->
+        <div class="glass rounded-2xl p-6 transition glass-hover">
+          <div class="mb-4 text-4xl">🎛️</div>
+          <h3 class="mb-2 text-lg font-bold">Pads circulaires</h3>
+          <p class="text-sm text-muted">Attribue un emoji ou une image à chaque son. Glow violet quand le son joue, hotkeys globaux, glisser-déposer pour réorganiser.</p>
+        </div>
+        <!-- Feature 2 -->
+        <div class="glass rounded-2xl p-6 transition glass-hover">
+          <div class="mb-4 text-4xl">🔊</div>
+          <h3 class="mb-2 text-lg font-bold">Routing audio pro</h3>
+          <p class="text-sm text-muted">Envoie tes sons sur Discord, OBS ou n'importe quel logiciel. Écoute-toi en même temps sur ton casque. Monitoring personnel intégré.</p>
+        </div>
+        <!-- Feature 3 -->
+        <div class="glass rounded-2xl p-6 transition glass-hover">
+          <div class="mb-4 text-4xl">🎙️</div>
+          <h3 class="mb-2 text-lg font-bold">Auto ducking intelligent</h3>
+          <p class="text-sm text-muted">Quand un son joue, ton micro baisse automatiquement dans le flux pour que le son ressorte proprement. Puis il remonte.</p>
+        </div>
+        <!-- Feature 4 -->
+        <div class="glass rounded-2xl p-6 transition glass-hover">
+          <div class="mb-4 text-4xl">⌨️</div>
+          <h3 class="mb-2 text-lg font-bold">Raccourcis globaux</h3>
+          <p class="text-sm text-muted">Déclenche n'importe quel son depuis le bureau, pendant un jeu, sans quitter ton application. Ctrl+Alt+F1, Alt+5, ce que tu veux.</p>
+        </div>
+        <!-- Feature 5 -->
+        <div class="glass rounded-2xl p-6 transition glass-hover">
+          <div class="mb-4 text-4xl">💬</div>
+          <h3 class="mb-2 text-lg font-bold">Discord Rich Presence</h3>
+          <p class="text-sm text-muted">Affiche "Joue à Resonance" et le nom du son sur ton profil Discord. Montre à ton groupe ce que tu balances.</p>
+        </div>
+        <!-- Feature 6 -->
+        <div class="glass rounded-2xl p-6 transition glass-hover">
+          <div class="mb-4 text-4xl">🎨</div>
+          <h3 class="mb-2 text-lg font-bold">Thèmes & glassmorphism</h3>
+          <p class="text-sm text-muted">Choisis entre Obsidian, Cyberpunk, Midnight Blue et Soft Purple. Design premium avec reflets, flous, bordures lumineuses.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comment ça marche (3 steps) -->
+  <section class="bg-surface/50 px-6 py-24">
+    <div class="mx-auto max-w-4xl">
+      <h2 class="mb-12 text-center text-3xl font-extrabold tracking-tight sm:text-4xl">En <span class="text-gradient">3 étapes</span></h2>
+      <div class="flex flex-col gap-8 sm:flex-row sm:gap-4">
+        <div class="glass flex-1 rounded-2xl p-6 text-center">
+          <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/20 text-2xl font-bold text-primary">1</div>
+          <h3 class="mb-2 font-bold">Installe VB-CABLE</h3>
+          <p class="text-sm text-muted">Outil gratuit qui crée une sortie audio virtuelle. Télécharge-le sur <a href="https://vb-audio.com/Cable/" class="text-primary underline" target="_blank">vb-audio.com</a>.</p>
+        </div>
+        <div class="glass flex-1 rounded-2xl p-6 text-center">
+          <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/20 text-2xl font-bold text-primary">2</div>
+          <h3 class="mb-2 font-bold">Installe Resonance</h3>
+          <p class="text-sm text-muted">Télécharge le setup, lance-le. L'assistant te guide. Sélectionne VB-CABLE comme sortie audio.</p>
+        </div>
+        <div class="glass flex-1 rounded-2xl p-6 text-center">
+          <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/20 text-2xl font-bold text-primary">3</div>
+          <h3 class="mb-2 font-bold">Balance tes sons</h3>
+          <p class="text-sm text-muted">Importe tes fichiers audio, assigne un emoji, appuie sur le pad. Tout le monde t'entend sur Discord.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screenshot section -->
+  <section class="px-6 py-24">
+    <div class="mx-auto max-w-2xl text-center">
+      <h2 class="mb-6 text-2xl font-extrabold tracking-tight sm:text-3xl">Setup <span class="text-gradient">simple</span></h2>
+      <p class="mb-8 text-muted">L'assistant de premier lancement te guide en 30 secondes. Pas besoin d'être ingénieur son.</p>
+      <img src="assets/screenshot-wizard.png" alt="Assistant de configuration Resonance" class="glass mx-auto w-full max-w-lg rounded-2xl" draggable="false">
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="px-6 py-24 text-center">
+    <div class="glass mx-auto max-w-2xl rounded-3xl p-10 glow">
+      <h2 class="mb-4 text-3xl font-extrabold tracking-tight">Prêt à équiper ton setup ?</h2>
+      <p class="mb-8 text-muted">Gratuit. Open source. Sans pub. Windows 10/11.</p>
+      <a href="https://github.com/Haaxeed/resonance/releases/latest" class="inline-flex items-center gap-3 rounded-2xl bg-primary px-8 py-4 text-lg font-bold text-white transition hover:bg-primary/80 active:scale-95">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Télécharger Resonance
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-border/50 px-6 py-8 text-center text-sm text-muted">
+    <div class="mx-auto flex max-w-2xl flex-col items-center gap-4 sm:flex-row sm:justify-between">
+      <span>© 2026 Resonance — <a href="https://github.com/Haaxeed/resonance" class="text-primary underline" target="_blank">GitHub</a></span>
+      <div class="flex gap-4">
+        <a href="https://github.com/Haaxeed/resonance" class="transition hover:text-white" target="_blank">Code source</a>
+        <a href="https://github.com/Haaxeed/resonance/issues" class="transition hover:text-white" target="_blank">Signaler un bug</a>
+        <a href="https://ko-fi.com/Haaxeed" class="transition hover:text-white" target="_blank">Soutenir ☕</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
