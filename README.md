@@ -6,7 +6,8 @@
 
 <p align="center">
   <strong>Soundboard desktop moderne pour Windows.</strong><br>
-  Tauri · React · Rust · WASAPI · Discord Rich Presence
+  Tauri · React · Rust · WASAPI · Discord Rich Presence<br>
+  <a href="https://haaxeed.github.io/resonance/">haaxeed.github.io/resonance</a>
 </p>
 
 <p align="center">
