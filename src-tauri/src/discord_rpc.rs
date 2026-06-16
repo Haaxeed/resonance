@@ -6,7 +6,7 @@ use std::time::Duration;
 // IMPORTANT : remplace ce placeholder par ton vrai Application ID Discord
 // (Discord Developer Portal → Applications → Application ID).
 // La Rich Presence ne fonctionnera pas tant que ce sera le placeholder.
-const DISCORD_CLIENT_ID: &str = "[REDACTED]";
+const DISCORD_CLIENT_ID: &str = "1516168278257696889";
 
 enum RpcCommand {
     Update(Option<String>),
