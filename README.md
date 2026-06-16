@@ -80,9 +80,6 @@ src-tauri/target/release/bundle/msi/
 
 ## Roadmap
 
-- [ ] Glow actif persistant sur les pads.
-- [ ] Sélecteur d’émoji inline amélioré.
-- [ ] Transitions animées entre les routes.
 - [ ] Plus de thèmes prédéfinis.
 - [ ] Pack de sons intégrés.
 - [ ] Synchronisation cloud des sons (optionnel).
