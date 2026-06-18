@@ -1,6 +1,6 @@
 [package]
 name = "resonance"
-version = "0.6.0"
+version = "0.6.2"
 description = "Resonance Soundboard"
 authors = ["Haaxed"]
 edition = "2021"

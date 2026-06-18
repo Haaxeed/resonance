@@ -34,6 +34,7 @@ impl InputHookManager {
     pub fn set_bindings(&self, bindings: Vec<(String, String)>) {
         if let Ok(mut state) = self.inner.lock() {
             state.bindings = bindings;
+            println!("[Resonance] low-level bindings updated: {:?}", state.bindings);
         }
     }
 
@@ -104,20 +105,21 @@ unsafe extern "system" fn low_level_keyboard_proc(n_code: i32, w_param: WPARAM, 
 
     let mut parts = Vec::new();
     if is_pressed(VK_LCONTROL) || is_pressed(VK_RCONTROL) {
-        parts.push("CmdOrControl".to_string());
+      parts.push("CmdOrControl".to_string());
     }
     if is_pressed(VK_LSHIFT) || is_pressed(VK_RSHIFT) {
-        parts.push("Shift".to_string());
+      parts.push("Shift".to_string());
     }
     if is_pressed(VK_LMENU) || is_pressed(VK_RMENU) {
-        parts.push("Alt".to_string());
+      parts.push("Alt".to_string());
     }
     if is_pressed(VK_LWIN) || is_pressed(VK_RWIN) {
-        parts.push("Meta".to_string());
+      parts.push("Meta".to_string());
     }
     parts.push(key_name.unwrap());
 
     let shortcut = parts.join("+");
+    println!("[Resonance] low-level key event: {}", shortcut);
 
     // Global state is injected via thread-local-ish access through a static.
     // Tauri apps are single-process, this is acceptable for a soundboard.
@@ -125,6 +127,7 @@ unsafe extern "system" fn low_level_keyboard_proc(n_code: i32, w_param: WPARAM, 
         if let Ok(state) = inner.lock() {
             for (binding_shortcut, sound_id) in &state.bindings {
                 if shortcuts_match(binding_shortcut, &shortcut) {
+                    println!("[Resonance] low-level match: {} -> {}", binding_shortcut, sound_id);
                     if let Some(cb) = &state.callback {
                         cb(sound_id);
                     }

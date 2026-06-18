@@ -94,10 +94,10 @@ export default function Library() {
 
   const handleImportFile = async () => {
     const selected = await open({
-      multiple: false,
+      multiple: true,
       filters: [{ name: "Audio", extensions: ["wav", "mp3", "flac", "ogg", "m4a"] }],
     });
-    if (typeof selected === "string") {
+    if (Array.isArray(selected) && selected.length > 0) {
       await importSoundFile(selected);
     }
   };

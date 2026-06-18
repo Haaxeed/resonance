@@ -57,6 +57,7 @@ export default function Pad({
   return (
     <div
       title={name}
+      onClick={reorderMode ? undefined : () => playSound(soundId)}
       className={cn(
         "group flex select-none flex-col items-center gap-2 text-center transition-all duration-150",
         reorderMode ? "cursor-default" : "cursor-pointer active:scale-[0.96]",
@@ -65,7 +66,6 @@ export default function Pad({
       style={{ width: size }}
     >
       <div
-        onClick={reorderMode ? undefined : () => playSound(soundId)}
         className={cn(
           "glass-pad relative flex items-center justify-center overflow-hidden rounded-full transition-all duration-200",
           active

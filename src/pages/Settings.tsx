@@ -60,6 +60,15 @@ export default function SettingsPage() {
     setForm(settings);
   }, [settings]);
 
+  // Sauvegarde automatique avec debounce
+  useEffect(() => {
+    if (!form) return;
+    const timer = setTimeout(() => {
+      saveSettings(form);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [form, saveSettings]);
+
   const update = (k: keyof AppSettings, v: any) => {
     setForm((prev: any) => ({ ...prev, [k]: v }));
   };

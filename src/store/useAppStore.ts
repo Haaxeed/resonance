@@ -22,7 +22,7 @@ interface AppState {
   fetchAppInfo: () => Promise<void>;
   playSound: (soundId: string) => Promise<void>;
   stopAll: () => Promise<void>;
-  importSoundFile: (path: string, category?: string | null) => Promise<void>;
+  importSoundFile: (path: string | string[], category?: string | null) => Promise<void>;
   importFolder: (path: string, category?: string | null) => Promise<void>;
   syncWatchedFolders: () => Promise<number>;
   toggleFavorite: (soundId: string, favorite: boolean) => Promise<void>;
@@ -126,7 +126,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   importSoundFile: async (path, category) => {
-    await invoke("import_sound_file", { path, category: category ?? null });
+    const paths = Array.isArray(path) ? path : [path];
+    for (const p of paths) {
+      await invoke("import_sound_file", { path: p, category: category ?? null });
+    }
     await get().fetchSounds();
     await get().fetchCategories();
   },

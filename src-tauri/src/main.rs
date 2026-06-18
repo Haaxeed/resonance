@@ -115,7 +115,9 @@ pub fn refresh_global_shortcuts<R: tauri::Runtime>(app: &tauri::AppHandle<R>) ->
     drop(conn);
 
     let shortcut_manager = app.global_shortcut();
-    shortcut_manager.unregister_all().map_err(|e| e.to_string())?;
+    if let Err(err) = shortcut_manager.unregister_all() {
+        println!("[Resonance] warning: unregister_all failed ({})", err);
+    }
 
     let bindings_state = app.state::<HotkeyBindings>();
     let mut bindings = bindings_state.0.lock().map_err(|e| e.to_string())?;
