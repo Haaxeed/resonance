@@ -340,6 +340,50 @@
     --ring: 265 70% 58%;
   }
 
+  .theme-neon-noir {
+    --background: 220 18% 5%;
+    --foreground: 140 80% 96%;
+    --card: 220 16% 8%;
+    --card-foreground: 140 80% 96%;
+    --popover: 220 16% 8%;
+    --popover-foreground: 140 80% 96%;
+    --primary: 120 100% 55%;
+    --primary-foreground: 220 18% 5%;
+    --secondary: 220 12% 13%;
+    --secondary-foreground: 140 80% 96%;
+    --muted: 220 10% 12%;
+    --muted-foreground: 140 20% 65%;
+    --accent: 180 100% 50%;
+    --accent-foreground: 220 18% 5%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 12% 16%;
+    --input: 220 12% 16%;
+    --ring: 120 100% 55%;
+  }
+
+  .theme-blood-moon {
+    --background: 0 25% 7%;
+    --foreground: 20 60% 96%;
+    --card: 0 22% 10%;
+    --card-foreground: 20 60% 96%;
+    --popover: 0 22% 10%;
+    --popover-foreground: 20 60% 96%;
+    --primary: 8 90% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 18% 15%;
+    --secondary-foreground: 20 60% 96%;
+    --muted: 0 15% 14%;
+    --muted-foreground: 20 30% 68%;
+    --accent: 30 100% 55%;
+    --accent-foreground: 0 25% 7%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 16% 18%;
+    --input: 0 16% 18%;
+    --ring: 8 90% 58%;
+  }
+
   /* Premium headings */
   .premium-heading {
     @apply font-bold tracking-wider;

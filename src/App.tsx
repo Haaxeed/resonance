@@ -69,10 +69,10 @@ function AppShell() {
 
   useEffect(() => {
     const theme = settings?.theme ?? "dark";
-    const isPreset = ["obsidian", "cyberpunk", "midnight-blue", "soft-purple"].includes(theme);
+    const isPreset = ["obsidian", "cyberpunk", "midnight-blue", "soft-purple", "neon-noir", "blood-moon"].includes(theme);
     const isDark = theme !== "light" && theme !== "soft-purple";
 
-    document.documentElement.classList.remove("theme-obsidian", "theme-cyberpunk", "theme-midnight-blue", "theme-soft-purple");
+    document.documentElement.classList.remove("theme-obsidian", "theme-cyberpunk", "theme-midnight-blue", "theme-soft-purple", "theme-neon-noir", "theme-blood-moon");
     if (isPreset) {
       document.documentElement.classList.add(`theme-${theme}`);
     }

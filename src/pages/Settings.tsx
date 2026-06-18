@@ -2,7 +2,7 @@ import { useAppStore } from "@/store/useAppStore";
 import type { AppSettings } from "@/types";
 import { eventToShortcut } from "@/lib/shortcuts";
 import { cn } from "@/lib/utils";
-import { Info, Keyboard, Headphones, RadioTower, Save, Share2, Volume2, Coffee, Heart } from "lucide-react";
+import { Info, Keyboard, Headphones, RadioTower, Share2, Volume2, Coffee, Heart } from "lucide-react";
 import { useState, useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
 
@@ -11,6 +11,8 @@ const THEMES = [
   { value: "cyberpunk", label: "Cyberpunk", preview: "linear-gradient(135deg, #facc15, #ec4899)" },
   { value: "midnight-blue", label: "Midnight Blue", preview: "linear-gradient(135deg, #3b82f6, #06b6d4)" },
   { value: "soft-purple", label: "Soft Purple", preview: "linear-gradient(135deg, #c084fc, #f0abfc)" },
+  { value: "neon-noir", label: "Néon Noir", preview: "linear-gradient(135deg, #39ff14, #06b6d4)" },
+  { value: "blood-moon", label: "Blood Moon", preview: "linear-gradient(135deg, #ff4d4d, #ff9f43)" },
 ];
 
 function SettingRow({
@@ -76,11 +78,6 @@ export default function SettingsPage() {
   const setTheme = (theme: string) => {
     update("theme", theme);
     setDarkMode(theme !== "light" && theme !== "soft-purple");
-  };
-
-  const submit = async () => {
-    if (!form) return;
-    await saveSettings(form);
   };
 
   if (!form) return <div className="p-8">Chargement...</div>;
@@ -230,10 +227,6 @@ export default function SettingsPage() {
         </div>
         <div className="mt-2 text-xs text-muted-foreground">Cette touche coupe immédiatement tous les sons, même quand Resonance n'est pas au premier plan.</div>
       </div>
-
-      <button onClick={submit} className="flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 font-medium text-primary-foreground hover:opacity-90">
-        <Save size={18} /> Sauvegarder les réglages
-      </button>
 
       <div className="glass-card rounded-[28px] p-5">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Discord</h2>
