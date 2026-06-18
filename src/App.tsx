@@ -56,18 +56,24 @@ function AppShell() {
       const target = e.target as HTMLElement | null;
       if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
       const combo = eventToShortcut(e);
-      console.log("[Resonance] JS key fallback:", combo, "raw key:", e.key, "code:", e.code);
       if (!combo) return;
+
+      // Panic key (highest priority)
+      if (settings?.panic_key && combo.toLowerCase() === settings.panic_key.toLowerCase()) {
+        e.preventDefault();
+        void stopAll();
+        return;
+      }
+
       const hk = hotkeys.find((h) => h.global && h.shortcut.toLowerCase() === combo.toLowerCase());
       if (hk) {
         e.preventDefault();
-        console.log("[Resonance] JS fallback matched:", combo, "->", hk.sound_id);
         void playSound(hk.sound_id);
       }
     };
     window.addEventListener("keydown", handler, true);
     return () => window.removeEventListener("keydown", handler, true);
-  }, [hotkeys, playSound]);
+  }, [hotkeys, playSound, settings?.panic_key, stopAll]);
 
   useEffect(() => {
     const theme = settings?.theme ?? "dark";
