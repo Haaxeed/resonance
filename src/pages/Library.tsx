@@ -154,7 +154,7 @@ export default function Library() {
   const commitShortcut = async (soundId: string) => {
     const value = editShortcutValue.trim();
     if (value) {
-      await setHotkey({ id: "", sound_id: soundId, shortcut: value, global: false });
+      await setHotkey({ id: crypto.randomUUID(), sound_id: soundId, shortcut: value, global: true });
     } else {
       await removeHotkey(soundId);
     }

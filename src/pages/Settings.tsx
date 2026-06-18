@@ -1,6 +1,6 @@
 import { useAppStore } from "@/store/useAppStore";
 import type { AppSettings } from "@/types";
-import { eventToShortcut, shortcutHasModifier, shortcutLooksReservedOnWindows } from "@/lib/shortcuts";
+import { eventToShortcut } from "@/lib/shortcuts";
 import { cn } from "@/lib/utils";
 import { Info, Keyboard, Headphones, RadioTower, Save, Share2, Volume2, Coffee, Heart } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -80,14 +80,6 @@ export default function SettingsPage() {
 
   const submit = async () => {
     if (!form) return;
-    if (form.panic_key && form.panic_key.trim() && !shortcutHasModifier(form.panic_key.trim())) {
-      window.alert("Le raccourci d'urgence global doit inclure Ctrl, Alt, Shift ou Win pour ne pas bloquer Windows/les jeux.");
-      return;
-    }
-    if (form.panic_key && form.panic_key.trim() && shortcutLooksReservedOnWindows(form.panic_key.trim())) {
-      window.alert("Les combinaisons avec Escape sont peu fiables / réservées sous Windows pour une hotkey globale. Utilise plutôt Ctrl+Pause, Alt+Pause ou Ctrl+ScrollLock.");
-      return;
-    }
     await saveSettings(form);
   };
 
@@ -236,7 +228,7 @@ export default function SettingsPage() {
             />
           </div>
         </div>
-        <div className="mt-2 text-xs text-muted-foreground">Les raccourcis globaux doivent inclure Ctrl, Alt, Shift ou Win. Sous Windows, évite Escape : préfère Ctrl+Pause, Alt+Pause ou Ctrl+ScrollLock.</div>
+        <div className="mt-2 text-xs text-muted-foreground">Cette touche coupe immédiatement tous les sons, même quand Resonance n'est pas au premier plan.</div>
       </div>
 
       <button onClick={submit} className="flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 font-medium text-primary-foreground hover:opacity-90">

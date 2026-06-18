@@ -271,7 +271,6 @@ pub fn get_audio_devices() -> Result<Vec<AudioDeviceInfo>, String> {
 #[tauri::command]
 pub fn play_sound_cmd(req: PlaySoundRequest, audio: State<AudioState>, db: State<DbState>) -> Result<i64, String> {
     let engine = audio.0.lock().map_err(|e| e.to_string())?;
-    engine.stop_all().map_err(|e| e.to_string())?;
     engine.play(PlayRequest {
         sound_id: req.sound_id.clone(),
         board_id: req.board_id,

@@ -278,7 +278,6 @@ fn main() {
                         println!("[Resonance] low-level panic shortcut triggered");
                     } else {
                         if let Ok(engine) = app_handle.state::<AudioState>().0.lock() {
-                            let _ = engine.stop_all();
                             let _ = engine.play(PlayRequest {
                                 sound_id: sound_id.to_string(),
                                 board_id: Some("default".to_string()),

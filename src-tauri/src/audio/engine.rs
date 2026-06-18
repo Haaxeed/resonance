@@ -662,6 +662,7 @@ fn audio_thread(db_path: std::path::PathBuf, input_id: Option<String>, output_id
                         }
 
                         if !settings.overlap_enabled {
+                            println!("[Resonance] overlap disabled: stopping all sounds before playing {}", req.sound_id);
                             mixer.stop_all();
                             let old_playbacks = std::mem::take(&mut active_playbacks);
                             for (_, workers) in old_playbacks {

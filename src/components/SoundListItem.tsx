@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type DragEvent, type MouseEvent } from "react";
 import type { Hotkey, Sound } from "@/types";
 import { useAppStore } from "@/store/useAppStore";
-import { eventToShortcut, shortcutHasModifier } from "@/lib/shortcuts";
+import { eventToShortcut } from "@/lib/shortcuts";
 import SoundIconPicker from "./SoundIconPicker";
 import { open } from "@tauri-apps/plugin-dialog";
 import { ChevronDown, GripVertical, Image as ImageIcon, Keyboard, Play, RotateCcw, Save, Star, Tag, Trash2 } from "lucide-react";
@@ -77,10 +77,6 @@ export default function SoundListItem({
   const saveShortcut = async () => {
     if (!draftShortcut.trim()) {
       await removeHotkey(sound.id);
-      return;
-    }
-    if (!shortcutHasModifier(draftShortcut.trim())) {
-      window.alert("Les hotkeys globales doivent inclure Ctrl, Alt, Shift ou Win pour ne pas bloquer Windows/les jeux.");
       return;
     }
     await setHotkey({
