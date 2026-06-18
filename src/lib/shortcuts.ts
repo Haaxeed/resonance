@@ -56,6 +56,12 @@ export function normalizeKeyName(key: string) {
 
 function normalizePhysicalKey(event: ShortcutKeyboardEvent) {
   const code = event.code ?? "";
+  const key = event.key;
+
+  // Prefer logical character for layout-specific keys (², é, è, à, etc.)
+  if (key && key.length === 1 && key !== " ") {
+    return key;
+  }
 
   if (/^Numpad[0-9]$/.test(code)) {
     return `Num${code.slice(-1)}`;
@@ -74,7 +80,7 @@ function normalizePhysicalKey(event: ShortcutKeyboardEvent) {
   if (code === "Slash") return "/";
   if (code === "Backslash") return "\\";
   if (code === "Semicolon") return ";";
-  if (code === "Quote") return "'";
+  if (code === "Quote") return "²";
   if (code === "BracketLeft") return "[";
   if (code === "BracketRight") return "]";
   if (code === "Minus") return "-";

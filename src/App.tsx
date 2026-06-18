@@ -3,6 +3,7 @@ import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { listen } from "@tauri-apps/api/event";
 import { useAppStore } from "@/store/useAppStore";
+import { eventToShortcut } from "@/lib/shortcuts";
 import BottomBar from "@/components/BottomBar";
 import TitleBar from "@/components/TitleBar";
 import Dashboard from "@/pages/Dashboard";
@@ -19,7 +20,7 @@ const pageTransition = {
 
 function AppShell() {
   const location = useLocation();
-  const { fetchSettings, fetchSounds, fetchHotkeys, fetchAppInfo, darkMode, settings, setPadSize, stopAll } = useAppStore();
+  const { fetchSettings, fetchSounds, fetchHotkeys, fetchAppInfo, darkMode, settings, setPadSize, stopAll, hotkeys, playSound } = useAppStore();
 
   useEffect(() => {
     try {
@@ -48,6 +49,23 @@ function AppShell() {
       if (unlisten) unlisten();
     };
   }, [stopAll]);
+
+  // Fallback keyboard handler when the low-level hook doesn't fire while the app is focused
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
+      const combo = eventToShortcut(e);
+      if (!combo) return;
+      const hk = hotkeys.find((h) => h.global && h.shortcut.toLowerCase() === combo.toLowerCase());
+      if (hk) {
+        e.preventDefault();
+        void playSound(hk.sound_id);
+      }
+    };
+    window.addEventListener("keydown", handler, true);
+    return () => window.removeEventListener("keydown", handler, true);
+  }, [hotkeys, playSound]);
 
   useEffect(() => {
     const theme = settings?.theme ?? "dark";
