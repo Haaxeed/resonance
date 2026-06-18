@@ -131,7 +131,6 @@ unsafe extern "system" fn low_level_keyboard_proc(n_code: i32, w_param: WPARAM, 
                     if let Some(cb) = &state.callback {
                         cb(sound_id);
                     }
-                    return LRESULT(1);
                 }
             }
         }
@@ -175,6 +174,17 @@ fn shortcuts_match(a: &str, b: &str) -> bool {
                 "numdivide" | "numpaddivide" => "numdivide".to_string(),
                 "numdecimal" | "numpaddecimal" => "numdecimal".to_string(),
                 "numenter" | "numpadenter" => "numenter".to_string(),
+                "²" => "backquote".to_string(),
+                "&" => "1".to_string(),
+                "é" => "2".to_string(),
+                "\"" => "3".to_string(),
+                "'" => "4".to_string(),
+                "(" => "5".to_string(),
+                "-" => "6".to_string(),
+                "è" => "7".to_string(),
+                "_" => "8".to_string(),
+                "ç" => "9".to_string(),
+                "à" => "0".to_string(),
                 _ => p,
             })
             .collect();

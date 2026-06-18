@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { GripVertical, LayoutGrid, Search, Star, Volume2, ZoomIn, ZoomOut } from "lucide-react";
+import { GripVertical, Layers, LayoutGrid, Search, Star, Volume2, ZoomIn, ZoomOut } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { cn } from "@/lib/utils";
 import PadGrid from "@/components/PadGrid";
@@ -13,6 +13,7 @@ export default function Dashboard() {
     fetchSounds,
     hotkeys,
     padSize,
+    saveSettings,
     setMonitorVolume,
     setPadSize,
     settings,
@@ -91,6 +92,25 @@ export default function Dashboard() {
             />
             <span className="w-8 text-right text-xs text-muted-foreground">{Math.round(monitorVolume * 100)}%</span>
           </div>
+
+          {/* Toggle overlap */}
+          <button
+            onClick={() => {
+              if (!settings) return;
+              const next = !settings.overlap_enabled;
+              void saveSettings({ ...settings, overlap_enabled: next });
+            }}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition",
+              settings?.overlap_enabled ?? true
+                ? "border-primary/50 bg-primary/15 text-primary shadow-[0_0_12px_rgba(var(--primary)_0.25)]"
+                : "border-white/8 bg-background/55 text-muted-foreground hover:text-foreground",
+            )}
+            title={settings?.overlap_enabled ?? true ? "Plusieurs sons peuvent se superposer" : "Un seul son à la fois"}
+          >
+            <Layers size={14} />
+            {settings?.overlap_enabled ?? true ? "Overlap" : "Solo"}
+          </button>
 
           <div className="flex items-center gap-1 rounded-xl border border-white/8 bg-background/55 px-1.5 py-1">
             <button onClick={() => setPadSize(padSize - 12)} className="rounded-lg p-1.5 hover:bg-primary/15" title="Réduire">

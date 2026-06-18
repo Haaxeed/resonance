@@ -661,6 +661,14 @@ fn audio_thread(db_path: std::path::PathBuf, input_id: Option<String>, output_id
                             }
                         }
 
+                        if !settings.overlap_enabled {
+                            mixer.stop_all();
+                            let old_playbacks = std::mem::take(&mut active_playbacks);
+                            for (_, workers) in old_playbacks {
+                                stop_playback_group(workers);
+                            }
+                        }
+
                         let base_gain = if sound.custom_volume {
                             sound.volume as f32
                         } else {

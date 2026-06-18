@@ -128,26 +128,30 @@ pub fn refresh_global_shortcuts<R: tauri::Runtime>(app: &tauri::AppHandle<R>) ->
 
     for hotkey in hotkeys.into_iter().filter(|h| h.global) {
         if let Some(accelerator) = normalize_shortcut(&hotkey.shortcut) {
-            if !shortcut_has_modifier(accelerator.as_str()) {
-                println!("[Resonance] skipped hotkey without modifier {} -> {}", accelerator, hotkey.sound_id);
-                continue;
-            }
-            if shortcut_manager.is_registered(accelerator.as_str()) {
-                println!("[Resonance] duplicate hotkey skipped {} -> {}", accelerator, hotkey.sound_id);
-                continue;
+            #[cfg(not(windows))]
+            {
+                if !shortcut_has_modifier(accelerator.as_str()) {
+                    println!("[Resonance] skipped hotkey without modifier {} -> {}", accelerator, hotkey.sound_id);
+                    continue;
+                }
+                if shortcut_manager.is_registered(accelerator.as_str()) {
+                    println!("[Resonance] duplicate hotkey skipped {} -> {}", accelerator, hotkey.sound_id);
+                    continue;
+                }
+                if let Err(err) = shortcut_manager.register(accelerator.as_str()) {
+                    println!("[Resonance] failed to register hotkey {} -> {} ({})", accelerator, hotkey.sound_id, err);
+                    continue;
+                }
+                if let Ok(parsed) = accelerator.parse::<tauri_plugin_global_shortcut::Shortcut>() {
+                    bindings.insert(parsed.id(), hotkey.sound_id.clone());
+                }
             }
 
-            if let Err(err) = shortcut_manager.register(accelerator.as_str()) {
-                println!("[Resonance] failed to register hotkey {} -> {} ({})", accelerator, hotkey.sound_id, err);
-                continue;
-            }
-
-            if let Ok(parsed) = accelerator.parse::<tauri_plugin_global_shortcut::Shortcut>() {
-                bindings.insert(parsed.id(), hotkey.sound_id.clone());
-            }
             #[cfg(windows)]
-            ll_bindings.push((accelerator.clone(), hotkey.sound_id.clone()));
-            println!("[Resonance] registered hotkey {} -> {}", accelerator, hotkey.sound_id);
+            {
+                ll_bindings.push((accelerator.clone(), hotkey.sound_id.clone()));
+                println!("[Resonance] registered low-level hotkey {} -> {}", accelerator, hotkey.sound_id);
+            }
         }
     }
 
@@ -158,21 +162,27 @@ pub fn refresh_global_shortcuts<R: tauri::Runtime>(app: &tauri::AppHandle<R>) ->
         .and_then(normalize_shortcut)
         .unwrap_or_else(|| "Ctrl+Pause".to_string());
 
-    if !shortcut_has_modifier(panic_shortcut.as_str()) {
-        println!("[Resonance] skipped panic shortcut without modifier {}", panic_shortcut);
-        return Ok(());
+    #[cfg(not(windows))]
+    {
+        if !shortcut_has_modifier(panic_shortcut.as_str()) {
+            println!("[Resonance] skipped panic shortcut without modifier {}", panic_shortcut);
+            return Ok(());
+        }
+
+        if !shortcut_manager.is_registered(panic_shortcut.as_str()) {
+            if let Err(err) = shortcut_manager.register(panic_shortcut.as_str()) {
+                println!("[Resonance] failed to register panic shortcut {} ({})", panic_shortcut, err);
+            }
+        }
+        if shortcut_manager.is_registered(panic_shortcut.as_str()) {
+            if let Ok(parsed) = panic_shortcut.parse::<tauri_plugin_global_shortcut::Shortcut>() {
+                bindings.insert(parsed.id(), "__STOP_ALL__".to_string());
+            }
+        }
     }
 
-    if !shortcut_manager.is_registered(panic_shortcut.as_str()) {
-        if let Err(err) = shortcut_manager.register(panic_shortcut.as_str()) {
-            println!("[Resonance] failed to register panic shortcut {} ({})", panic_shortcut, err);
-        }
-    }
-    if shortcut_manager.is_registered(panic_shortcut.as_str()) {
-        if let Ok(parsed) = panic_shortcut.parse::<tauri_plugin_global_shortcut::Shortcut>() {
-            bindings.insert(parsed.id(), "__STOP_ALL__".to_string());
-        }
-        #[cfg(windows)]
+    #[cfg(windows)]
+    {
         ll_bindings.push((panic_shortcut.clone(), "__STOP_ALL__".to_string()));
     }
     println!("[Resonance] registered panic shortcut {}", panic_shortcut);

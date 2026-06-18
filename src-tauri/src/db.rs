@@ -127,7 +127,8 @@ pub fn init_db(app: &tauri::AppHandle) -> Result<Connection> {
             theme TEXT DEFAULT 'dark',
             panic_key TEXT,
             auto_duck INTEGER DEFAULT 0,
-            duck_threshold REAL DEFAULT 0.3
+            duck_threshold REAL DEFAULT 0.3,
+            overlap_enabled INTEGER DEFAULT 1
         )",
         [],
     )?;
@@ -156,6 +157,7 @@ pub fn init_db(app: &tauri::AppHandle) -> Result<Connection> {
     conn.execute("ALTER TABLE sounds ADD COLUMN image_path TEXT", []).ok();
     conn.execute("ALTER TABLE settings ADD COLUMN monitor_volume REAL DEFAULT 1.0", []).ok();
     conn.execute("ALTER TABLE settings ADD COLUMN discord_rpc_enabled INTEGER DEFAULT 1", []).ok();
+    conn.execute("ALTER TABLE settings ADD COLUMN overlap_enabled INTEGER DEFAULT 1", []).ok();
 
     conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_sounds_path ON sounds(path)", [])?;
     conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_board_sound_unique ON board_items(board_id, sound_id)", [])?;
@@ -553,7 +555,7 @@ pub fn reorder_board_items(conn: &Connection, board_id: &str, sound_ids: &[Strin
 
 pub fn get_settings(conn: &Connection) -> Result<AppSettings> {
     let mut stmt = conn.prepare(
-        "SELECT id, input_device_id, output_device_id, mic_volume, master_volume, soundboard_volume, soundboard_live_enabled, monitoring_enabled, theme, panic_key, auto_duck, duck_threshold, monitor_volume, discord_rpc_enabled FROM settings WHERE id = 1"
+        "SELECT id, input_device_id, output_device_id, mic_volume, master_volume, soundboard_volume, soundboard_live_enabled, monitoring_enabled, theme, panic_key, auto_duck, duck_threshold, monitor_volume, discord_rpc_enabled, overlap_enabled FROM settings WHERE id = 1"
     )?;
     let settings = stmt.query_row([], |row| {
         Ok(AppSettings {
@@ -571,6 +573,7 @@ pub fn get_settings(conn: &Connection) -> Result<AppSettings> {
             duck_threshold: row.get(11)?,
             monitor_volume: row.get(12)?,
             discord_rpc_enabled: row.get::<_, i64>(13)? != 0,
+            overlap_enabled: row.get::<_, i64>(14)? != 0,
         })
     })?;
     Ok(settings)
@@ -581,13 +584,13 @@ pub fn update_settings(conn: &Connection, settings: &AppSettings) -> Result<()> 
         "UPDATE settings SET
             input_device_id = ?1, output_device_id = ?2, mic_volume = ?3,
             master_volume = ?4, soundboard_volume = ?5, soundboard_live_enabled = ?6, monitoring_enabled = ?7,
-            theme = ?8, panic_key = ?9, auto_duck = ?10, duck_threshold = ?11, monitor_volume = ?12, discord_rpc_enabled = ?13
+            theme = ?8, panic_key = ?9, auto_duck = ?10, duck_threshold = ?11, monitor_volume = ?12, discord_rpc_enabled = ?13, overlap_enabled = ?14
          WHERE id = 1",
         params![
             settings.input_device_id, settings.output_device_id, settings.mic_volume,
             settings.master_volume, settings.soundboard_volume, if settings.soundboard_live_enabled { 1 } else { 0 }, if settings.monitoring_enabled { 1 } else { 0 },
             settings.theme, settings.panic_key, if settings.auto_duck { 1 } else { 0 }, settings.duck_threshold, settings.monitor_volume,
-            if settings.discord_rpc_enabled { 1 } else { 0 }
+            if settings.discord_rpc_enabled { 1 } else { 0 }, if settings.overlap_enabled { 1 } else { 0 }
         ],
     )?;
     Ok(())

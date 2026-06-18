@@ -62,6 +62,7 @@ pub struct AppSettings {
     pub panic_key: Option<String>,
     pub auto_duck: bool,
     pub duck_threshold: f64,
+    pub overlap_enabled: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

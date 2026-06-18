@@ -55,6 +55,7 @@ export interface AppSettings {
   panic_key: string | null;
   auto_duck: boolean;
   duck_threshold: number;
+  overlap_enabled: boolean;
 }
 
 export interface AudioDeviceInfo {
