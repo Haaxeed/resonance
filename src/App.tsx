@@ -56,10 +56,12 @@ function AppShell() {
       const target = e.target as HTMLElement | null;
       if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
       const combo = eventToShortcut(e);
+      console.log("[Resonance] JS key fallback:", combo, "raw key:", e.key, "code:", e.code);
       if (!combo) return;
       const hk = hotkeys.find((h) => h.global && h.shortcut.toLowerCase() === combo.toLowerCase());
       if (hk) {
         e.preventDefault();
+        console.log("[Resonance] JS fallback matched:", combo, "->", hk.sound_id);
         void playSound(hk.sound_id);
       }
     };

@@ -57,6 +57,20 @@ export function normalizeKeyName(key: string) {
 function normalizePhysicalKey(event: ShortcutKeyboardEvent) {
   const code = event.code ?? "";
   const key = event.key;
+  const hasModifier = event.ctrlKey || event.altKey || event.metaKey;
+
+  // When modifiers are held, use physical code so Alt+5 isn't Alt+{ on AZERTY
+  if (hasModifier) {
+    if (/^Digit([0-9])$/.test(code)) return code.slice(5);
+    if (/^Key([A-Z])$/.test(code)) return code.slice(3);
+    if (/^Numpad[0-9]$/.test(code)) return `Num${code.slice(-1)}`;
+    if (code === "NumpadAdd") return "NumAdd";
+    if (code === "NumpadSubtract") return "NumSubtract";
+    if (code === "NumpadMultiply") return "NumMultiply";
+    if (code === "NumpadDivide") return "NumDivide";
+    if (code === "NumpadDecimal") return "NumDecimal";
+    if (code === "NumpadEnter") return "NumEnter";
+  }
 
   // Prefer logical character for layout-specific keys (², é, è, à, etc.)
   if (key && key.length === 1 && key !== " ") {
