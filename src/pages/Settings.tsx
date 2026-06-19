@@ -54,7 +54,7 @@ function SettingRow({
 }
 
 export default function SettingsPage() {
-  const { settings, saveSettings, setDarkMode, appInfo } = useAppStore();
+  const { settings, saveSettings, setDarkMode, setVolumes, appInfo } = useAppStore();
   const [form, setForm] = useState(settings);
   const [recordingPanic, setRecordingPanic] = useState(false);
 
@@ -72,7 +72,14 @@ export default function SettingsPage() {
   }, [form, saveSettings]);
 
   const update = (k: keyof AppSettings, v: any) => {
-    setForm((prev: any) => ({ ...prev, [k]: v }));
+    setForm((prev: any) => {
+      if (!prev) return prev;
+      const next = { ...prev, [k]: v };
+      if (k === "mic_volume" || k === "master_volume" || k === "soundboard_volume") {
+        void setVolumes(next.mic_volume, next.master_volume, next.soundboard_volume);
+      }
+      return next;
+    });
   };
 
   const setTheme = (theme: string) => {

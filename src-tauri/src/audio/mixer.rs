@@ -71,6 +71,14 @@ impl MixerState {
 
     pub fn set_mic_buffer(&mut self, buf: &[f32]) {
         self.mic_buffer.extend_from_slice(buf);
+        // Limit mic buffer size to ~200ms to prevent drift/accumulation causing multi-second delays
+        let max_frames = (self.sample_rate * 2 / 10).max(1) as usize;
+        let max_len = max_frames * self.channels.max(1) as usize;
+        if self.mic_buffer.len() > max_len {
+            let excess = self.mic_buffer.len() - max_len;
+            self.mic_buffer.drain(..excess);
+            self.mic_cursor = self.mic_cursor.saturating_sub(excess);
+        }
     }
 
     pub fn clear_consumed_mic(&mut self) {

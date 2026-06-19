@@ -310,6 +310,17 @@ fn main() {
             list_hotkeys, set_hotkey, remove_hotkey_for_sound, get_app_info,
             set_discord_rpc_enabled, get_discord_rpc_enabled
         ])
-        .run(tauri::generate_context!())
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|app_handle, event| {
+            if let tauri::RunEvent::ExitRequested { .. } = event {
+                println!("[Resonance] Exit requested, stopping audio engine...");
+                if let Some(engine) = app_handle.try_state::<AudioState>() {
+                    if let Ok(e) = engine.0.lock() {
+                        let _ = e.stop_all();
+                    }
+                }
+            }
+        })
         .expect("error while running tauri application");
 }

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { listen } from "@tauri-apps/api/event";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { useAppStore } from "@/store/useAppStore";
 import { eventToShortcut } from "@/lib/shortcuts";
 import BottomBar from "@/components/BottomBar";
@@ -20,7 +21,7 @@ const pageTransition = {
 
 function AppShell() {
   const location = useLocation();
-  const { fetchSettings, fetchSounds, fetchHotkeys, fetchAppInfo, darkMode, settings, setPadSize, stopAll, hotkeys, playSound } = useAppStore();
+  const { fetchSettings, fetchSounds, fetchHotkeys, fetchAppInfo, darkMode, settings, setPadSize, stopAll, hotkeys, playSound, importFolder, importSoundFile } = useAppStore();
 
   useEffect(() => {
     try {
@@ -74,6 +75,27 @@ function AppShell() {
     window.addEventListener("keydown", handler, true);
     return () => window.removeEventListener("keydown", handler, true);
   }, [hotkeys, playSound, settings?.panic_key, stopAll]);
+
+  // Tauri native drag-and-drop (works across the whole window)
+  useEffect(() => {
+    let unlisten: (() => void) | undefined;
+    getCurrentWebview().onDragDropEvent(async (event) => {
+      if (event.payload.type === "drop") {
+        const paths = event.payload.paths;
+        for (const path of paths) {
+          if (/\.(wav|mp3|flac|ogg|m4a)$/i.test(path)) {
+            await importSoundFile(path);
+          } else {
+            await importFolder(path);
+          }
+        }
+        await fetchSounds();
+      }
+    }).then((fn) => { unlisten = fn; });
+    return () => {
+      if (unlisten) unlisten();
+    };
+  }, [importSoundFile, importFolder, fetchSounds]);
 
   useEffect(() => {
     const theme = settings?.theme ?? "dark";
