@@ -1,6 +1,6 @@
 [package]
 name = "resonance"
-version = "0.6.3"
+version = "0.6.4"
 description = "Resonance Soundboard"
 authors = ["Haaxed"]
 edition = "2021"
@@ -10,7 +10,7 @@ rust-version = "1.75"
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["tray-icon"] }
 tauri-plugin-global-shortcut = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-shell = "2"

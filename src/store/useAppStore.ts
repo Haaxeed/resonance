@@ -27,6 +27,7 @@ interface AppState {
   syncWatchedFolders: () => Promise<number>;
   toggleFavorite: (soundId: string, favorite: boolean) => Promise<void>;
   removeSound: (soundId: string) => Promise<void>;
+  removeBoardItem: (boardId: string, soundId: string) => Promise<void>;
   reorderSounds: (soundIds: string[]) => Promise<void>;
   renameSound: (soundId: string, name: string) => Promise<void>;
   setSoundCategory: (soundId: string, category: string) => Promise<void>;
@@ -159,6 +160,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     await invoke("remove_sound", { id: soundId });
     await get().fetchSounds();
     await get().fetchHotkeys();
+  },
+
+  removeBoardItem: async (boardId, soundId) => {
+    await invoke("remove_board_item", { id: `${boardId}:${soundId}` });
+    await get().fetchSounds();
   },
 
   reorderSounds: async (soundIds) => {

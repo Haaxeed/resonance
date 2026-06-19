@@ -59,6 +59,7 @@ function SortablePad({
         name={sound.name}
         icon={sound.icon}
         shortcut={hotkeyMap.get(sound.id)?.shortcut}
+        category={sound.category}
         playCount={sound.play_count}
         imagePath={sound.image_path}
         size={padSize}
@@ -153,6 +154,7 @@ export default function PadGrid({ sounds, hotkeyMap, reorderMode }: PadGridProps
           name={sound.name}
           icon={sound.icon}
           shortcut={hotkeyMap.get(sound.id)?.shortcut}
+          category={sound.category}
           playCount={sound.play_count}
           imagePath={sound.image_path}
           size={padSize}

@@ -302,7 +302,8 @@ fn main() {
             let quit_i = tauri::menu::MenuItem::with_id(app, "quit", "Quitter", true, None::<&str>)?;
             let show_i = tauri::menu::MenuItem::with_id(app, "show", "Afficher", true, None::<&str>)?;
             let menu = tauri::menu::Menu::with_items(app, &[&show_i, &quit_i])?;
-            let _tray = tauri::tray::TrayIconBuilder::new()
+            let tray_icon = app.default_window_icon().cloned();
+            let mut tray_builder = tauri::tray::TrayIconBuilder::with_id("main-tray")
                 .menu(&menu)
                 .on_menu_event(|app, event| {
                     match event.id.as_ref() {
@@ -327,8 +328,11 @@ fn main() {
                             let _ = window.set_focus();
                         }
                     }
-                })
-                .build(app)?;
+                });
+            if let Some(icon) = tray_icon {
+                tray_builder = tray_builder.icon(icon);
+            }
+            let _tray = tray_builder.build(app)?;
 
             Ok(())
         })
