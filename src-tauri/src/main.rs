@@ -367,6 +367,5 @@ fn main() {
                 }
                 _ => {}
             }
-        })
-        .expect("error while running tauri application");
+        });
 }

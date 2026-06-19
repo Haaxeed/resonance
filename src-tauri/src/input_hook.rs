@@ -180,7 +180,6 @@ fn shortcuts_match(a: &str, b: &str) -> bool {
                 "&" => "1".to_string(),
                 "é" => "2".to_string(),
                 "\"" => "3".to_string(),
-                "'" => "4".to_string(),
                 "(" => "5".to_string(),
                 "-" => "6".to_string(),
                 "è" => "7".to_string(),
