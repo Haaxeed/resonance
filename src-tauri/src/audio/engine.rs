@@ -596,6 +596,7 @@ fn audio_thread(db_path: std::path::PathBuf, input_id: Option<String>, output_id
         let mut sound_cache: HashMap<String, (Vec<f32>, u32, u16)> = HashMap::new();
         let mut current_output_id = output_id.clone();
         let mut active_playbacks: HashMap<String, Vec<PlaybackWorker>> = HashMap::new();
+        let mut mic_accumulator: Vec<f32> = vec![];
 
         let (mut cap_stream, mut ren_stream) = init_streams(&input_id, &output_id)?;
         println!("[Resonance] Engine started input={:?} output={:?}", input_id, output_id);
@@ -800,7 +801,13 @@ fn audio_thread(db_path: std::path::PathBuf, input_id: Option<String>, output_id
                         mic_samples = resample_buffer(&mic_samples, cap.sample_rate, cap.channels, mixer_sr, mixer_ch);
                     }
                 }
-                mixer.set_mic_buffer(&mic_samples);
+                mic_accumulator.extend_from_slice(&mic_samples);
+                // Safety cap to prevent extreme drift / silence bursts
+                let max_acc = (mixer_sr * mixer_ch as u32 * 4 / 10) as usize; // 400ms
+                if mic_accumulator.len() > max_acc {
+                    let excess = mic_accumulator.len() - max_acc;
+                    mic_accumulator.drain(..excess);
+                }
             }
 
             // Render to VB-Cable (output) — write ALL available frames
@@ -813,6 +820,15 @@ fn audio_thread(db_path: std::path::PathBuf, input_id: Option<String>, output_id
                     let frames_available = frame_count.saturating_sub(padding);
                     frames_to_write = frames_available;
                     if frames_to_write > 0 {
+                        // Feed exactly the samples needed for this render block to keep mic in sync
+                        let needed = (frames_to_write * ren.channels as u32) as usize;
+                        let available = mic_accumulator.len().min(needed);
+                        if available > 0 {
+                            mixer.set_mic_buffer(&mic_accumulator[..available]);
+                            mic_accumulator.drain(..available);
+                        } else {
+                            mixer.set_mic_buffer(&[]);
+                        }
                         let buffer = rc.GetBuffer(frames_to_write)?;
                         if !buffer.is_null() {
                             let samples_to_write = (frames_to_write * ren.channels as u32) as usize;

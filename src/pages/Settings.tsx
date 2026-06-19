@@ -2,7 +2,7 @@ import { useAppStore } from "@/store/useAppStore";
 import type { AppSettings } from "@/types";
 import { eventToShortcut } from "@/lib/shortcuts";
 import { cn } from "@/lib/utils";
-import { Info, Keyboard, Headphones, RadioTower, Share2, Volume2, Coffee, Heart } from "lucide-react";
+import { Info, Keyboard, Headphones, RadioTower, Share2, Volume2, Coffee, Heart, Power } from "lucide-react";
 import { useState, useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
 
@@ -94,6 +94,24 @@ export default function SettingsPage() {
       <div className="mx-auto flex max-w-2xl flex-col gap-6 pb-8">
       <div>
         <h1 className="premium-heading text-3xl tracking-tight">Réglages</h1>
+      </div>
+
+      <div className="glass-card rounded-[28px] p-5">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Général</h2>
+        <div className="mt-4">
+          <SettingRow
+            label="Lancer au démarrage de Windows"
+            description="Resonance démarre automatiquement avec Windows et reste actif en arrière-plan."
+            icon={Power}
+          >
+            <input
+              type="checkbox"
+              checked={form.autostart_enabled}
+              onChange={(e) => update("autostart_enabled", e.target.checked)}
+              className="premium-checkbox"
+            />
+          </SettingRow>
+        </div>
       </div>
 
       <div className="glass-card rounded-[28px] p-5">

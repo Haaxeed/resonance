@@ -56,6 +56,7 @@ export interface AppSettings {
   auto_duck: boolean;
   duck_threshold: number;
   overlap_enabled: boolean;
+  autostart_enabled: boolean;
 }
 
 export interface AudioDeviceInfo {

@@ -63,6 +63,7 @@ pub struct AppSettings {
     pub auto_duck: bool,
     pub duck_threshold: f64,
     pub overlap_enabled: bool,
+    pub autostart_enabled: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

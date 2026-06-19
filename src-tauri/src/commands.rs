@@ -260,6 +260,16 @@ pub fn save_settings(settings: AppSettings, db: State<DbState>, app: AppHandle) 
     let conn = db.0.lock().map_err(|e| e.to_string())?;
     db::update_settings(&conn, &settings).map_err(|e| e.to_string())?;
     drop(conn);
+
+    // Apply autostart setting
+    use tauri_plugin_autostart::ManagerExt;
+    let autostart_manager = app.autolaunch();
+    if settings.autostart_enabled {
+        let _ = autostart_manager.enable();
+    } else {
+        let _ = autostart_manager.disable();
+    }
+
     refresh_global_shortcuts(&app)
 }
 

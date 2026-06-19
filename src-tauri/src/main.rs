@@ -204,6 +204,7 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_autostart::init(tauri_plugin_autostart::MacosLauncher::LaunchAgent, None))
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
                 .with_handler(|app, shortcut, event| {
@@ -297,6 +298,38 @@ fn main() {
                 println!("[Resonance] global shortcuts initialization warning: {}", err);
             }
 
+            // System tray
+            let quit_i = tauri::menu::MenuItem::with_id(app, "quit", "Quitter", true, None::<&str>)?;
+            let show_i = tauri::menu::MenuItem::with_id(app, "show", "Afficher", true, None::<&str>)?;
+            let menu = tauri::menu::Menu::with_items(app, &[&show_i, &quit_i])?;
+            let _tray = tauri::tray::TrayIconBuilder::new()
+                .menu(&menu)
+                .on_menu_event(|app, event| {
+                    match event.id.as_ref() {
+                        "quit" => {
+                            println!("[Resonance] Quit from tray");
+                            app.exit(0);
+                        }
+                        "show" => {
+                            if let Some(window) = app.get_webview_window("main") {
+                                let _ = window.show();
+                                let _ = window.set_focus();
+                            }
+                        }
+                        _ => {}
+                    }
+                })
+                .on_tray_icon_event(|tray, event| {
+                    if let tauri::tray::TrayIconEvent::Click { .. } = event {
+                        let app = tray.app_handle();
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.show();
+                            let _ = window.set_focus();
+                        }
+                    }
+                })
+                .build(app)?;
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -313,13 +346,26 @@ fn main() {
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
         .run(|app_handle, event| {
-            if let tauri::RunEvent::ExitRequested { .. } = event {
-                println!("[Resonance] Exit requested, stopping audio engine...");
-                if let Some(engine) = app_handle.try_state::<AudioState>() {
-                    if let Ok(e) = engine.0.lock() {
-                        let _ = e.stop_all();
+            match event {
+                tauri::RunEvent::ExitRequested { .. } => {
+                    println!("[Resonance] Exit requested, stopping audio engine...");
+                    if let Some(engine) = app_handle.try_state::<AudioState>() {
+                        if let Ok(e) = engine.0.lock() {
+                            let _ = e.stop_all();
+                        }
                     }
                 }
+                tauri::RunEvent::WindowEvent { label, event, .. } => {
+                    if label == "main" {
+                        if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                            api.prevent_close();
+                            if let Some(window) = app_handle.get_webview_window("main") {
+                                let _ = window.hide();
+                            }
+                        }
+                    }
+                }
+                _ => {}
             }
         })
         .expect("error while running tauri application");

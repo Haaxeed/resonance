@@ -50,6 +50,10 @@
         "transparent": true
       }
     ],
+    "trayIcon": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    },
     "security": {
       "csp": null,
       "capabilities": [
@@ -69,7 +73,12 @@
             "core:window:allow-toggle-maximize",
             "core:window:allow-close",
             "core:window:allow-is-maximized",
-            "core:window:allow-start-dragging"
+            "core:window:allow-start-dragging",
+            "core:tray:default",
+            "autostart:default",
+            "autostart:allow-enable",
+            "autostart:allow-disable",
+            "autostart:allow-is-enabled"
           ]
         }
       ]
