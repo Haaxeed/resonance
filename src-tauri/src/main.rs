@@ -115,8 +115,7 @@ pub fn refresh_global_shortcuts<R: tauri::Runtime>(app: &tauri::AppHandle<R>) ->
     drop(conn);
 
     let shortcut_manager = app.global_shortcut();
-    if let Err(err) = shortcut_manager.unregister_all() {
-        println!("[Resonance] warning: unregister_all failed ({})", err);
+    if let Err(_err) = shortcut_manager.unregister_all() {
     }
 
     let bindings_state = app.state::<HotkeyBindings>();
@@ -131,15 +130,12 @@ pub fn refresh_global_shortcuts<R: tauri::Runtime>(app: &tauri::AppHandle<R>) ->
             #[cfg(not(windows))]
             {
                 if !shortcut_has_modifier(accelerator.as_str()) {
-                    println!("[Resonance] skipped hotkey without modifier {} -> {}", accelerator, hotkey.sound_id);
                     continue;
                 }
                 if shortcut_manager.is_registered(accelerator.as_str()) {
-                    println!("[Resonance] duplicate hotkey skipped {} -> {}", accelerator, hotkey.sound_id);
                     continue;
                 }
                 if let Err(err) = shortcut_manager.register(accelerator.as_str()) {
-                    println!("[Resonance] failed to register hotkey {} -> {} ({})", accelerator, hotkey.sound_id, err);
                     continue;
                 }
                 if let Ok(parsed) = accelerator.parse::<tauri_plugin_global_shortcut::Shortcut>() {
@@ -150,7 +146,6 @@ pub fn refresh_global_shortcuts<R: tauri::Runtime>(app: &tauri::AppHandle<R>) ->
             #[cfg(windows)]
             {
                 ll_bindings.push((accelerator.clone(), hotkey.sound_id.clone()));
-                println!("[Resonance] registered low-level hotkey {} -> {}", accelerator, hotkey.sound_id);
             }
         }
     }
@@ -165,13 +160,11 @@ pub fn refresh_global_shortcuts<R: tauri::Runtime>(app: &tauri::AppHandle<R>) ->
     #[cfg(not(windows))]
     {
         if !shortcut_has_modifier(panic_shortcut.as_str()) {
-            println!("[Resonance] skipped panic shortcut without modifier {}", panic_shortcut);
             return Ok(());
         }
 
         if !shortcut_manager.is_registered(panic_shortcut.as_str()) {
             if let Err(err) = shortcut_manager.register(panic_shortcut.as_str()) {
-                println!("[Resonance] failed to register panic shortcut {} ({})", panic_shortcut, err);
             }
         }
         if shortcut_manager.is_registered(panic_shortcut.as_str()) {
@@ -185,7 +178,6 @@ pub fn refresh_global_shortcuts<R: tauri::Runtime>(app: &tauri::AppHandle<R>) ->
     {
         ll_bindings.push((panic_shortcut.clone(), "__STOP_ALL__".to_string()));
     }
-    println!("[Resonance] registered panic shortcut {}", panic_shortcut);
 
     #[cfg(windows)]
     {
@@ -198,12 +190,11 @@ pub fn refresh_global_shortcuts<R: tauri::Runtime>(app: &tauri::AppHandle<R>) ->
 fn main() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
 
-    println!("[Resonance] Starting audio engine...");
 
     tauri::Builder::default()
-        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_autostart::init(tauri_plugin_autostart::MacosLauncher::LaunchAgent, None))
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
@@ -212,7 +203,7 @@ fn main() {
                         return;
                     }
 
-                    let shortcut_text = shortcut.to_string();
+                    let _shortcut_text = shortcut.to_string();
                     let shortcut_id = shortcut.id();
                     let binding = app
                         .state::<HotkeyBindings>()
@@ -227,7 +218,6 @@ fn main() {
                                 let _ = engine.stop_all();
                             }
                             let _ = app.emit("panic-triggered", ());
-                            println!("[Resonance] panic shortcut triggered: {}", shortcut_text);
                         }
                         Some(sound_id) => {
                             if let Ok(engine) = app.state::<AudioState>().0.lock() {
@@ -240,10 +230,8 @@ fn main() {
                             if let Ok(conn) = app.state::<DbState>().0.lock() {
                                 let _ = db::increment_play_count(&conn, sound_id);
                             }
-                            println!("[Resonance] hotkey triggered {} -> {}", shortcut_text, sound_id);
                         }
                         None => {
-                            println!("[Resonance] shortcut pressed but not bound: {}", shortcut_text);
                         }
                     }
                 })
@@ -276,7 +264,6 @@ fn main() {
                             let _ = engine.stop_all();
                         }
                         let _ = app_handle.emit("panic-triggered", ());
-                        println!("[Resonance] low-level panic shortcut triggered");
                     } else {
                         if let Ok(engine) = app_handle.state::<AudioState>().0.lock() {
                             let _ = engine.play(PlayRequest {
@@ -287,15 +274,13 @@ fn main() {
                         if let Ok(conn) = app_handle.state::<DbState>().0.lock() {
                             let _ = db::increment_play_count(&conn, sound_id);
                         }
-                        println!("[Resonance] low-level hotkey triggered -> {}", sound_id);
                     }
                 });
                 unsafe { crate::input_hook::set_global_input_hook(&hook_manager); }
                 app.manage(hook_manager);
             }
 
-            if let Err(err) = refresh_global_shortcuts(app.app_handle()) {
-                println!("[Resonance] global shortcuts initialization warning: {}", err);
+            if let Err(_err) = refresh_global_shortcuts(app.app_handle()) {
             }
 
             // System tray
@@ -308,7 +293,6 @@ fn main() {
                 .on_menu_event(|app, event| {
                     match event.id.as_ref() {
                         "quit" => {
-                            println!("[Resonance] Quit from tray");
                             app.exit(0);
                         }
                         "show" => {
@@ -321,7 +305,7 @@ fn main() {
                     }
                 })
                 .on_tray_icon_event(|tray, event| {
-                    if let tauri::tray::TrayIconEvent::Click { .. } = event {
+                    if let tauri::tray::TrayIconEvent::Click { button: tauri::tray::MouseButton::Left, .. } = event {
                         let app = tray.app_handle();
                         if let Some(window) = app.get_webview_window("main") {
                             let _ = window.show();
@@ -352,7 +336,6 @@ fn main() {
         .run(|app_handle, event| {
             match event {
                 tauri::RunEvent::ExitRequested { .. } => {
-                    println!("[Resonance] Exit requested, stopping audio engine...");
                     if let Some(engine) = app_handle.try_state::<AudioState>() {
                         if let Ok(e) = engine.0.lock() {
                             let _ = e.stop_all();

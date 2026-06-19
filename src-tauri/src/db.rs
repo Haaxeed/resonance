@@ -25,7 +25,6 @@ pub fn backup_db_before_upgrade(app: &tauri::AppHandle) -> Result<()> {
     let backup_path = backup_dir.join(backup_name);
 
     std::fs::copy(&db_path, &backup_path)?;
-    println!("[Resonance] database backed up to {:?}", backup_path);
 
     // Keep only the 10 most recent backups
     let mut backups: Vec<std::path::PathBuf> = std::fs::read_dir(&backup_dir)?

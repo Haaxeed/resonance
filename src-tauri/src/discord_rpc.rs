@@ -40,7 +40,6 @@ pub fn init(enabled: bool) {
     }
 
     if DISCORD_CLIENT_ID == "[REDACTED]" {
-        eprintln!("[Resonance] Discord RPC: DISCORD_CLIENT_ID n'est pas configuré. Rich Presence désactivée.");
         return;
     }
 
@@ -57,23 +56,20 @@ pub fn init(enabled: bool) {
         let mut client = loop {
             match DiscordIpcClient::new(DISCORD_CLIENT_ID) {
                 Ok(c) => break c,
-                Err(e) => {
-                    eprintln!("[Resonance] Discord RPC client creation failed (retry in 5s): {}", e);
+                Err(_) => {
                     std::thread::sleep(Duration::from_secs(5));
                 }
             }
         };
 
         loop {
-            if let Err(e) = client.connect() {
-                eprintln!("[Resonance] Discord RPC connect failed (retry in 5s): {}", e);
+            if let Err(_) = client.connect() {
                 std::thread::sleep(Duration::from_secs(5));
                 continue;
             }
             break;
         }
 
-        eprintln!("[Resonance] Discord RPC connectée.");
         let _ = client.set_activity(default_activity());
 
         loop {

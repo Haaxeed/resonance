@@ -156,7 +156,6 @@ unsafe fn buffer_to_f32(src: *const u8, frame_count: usize, channels: u16, bits:
             }
         }
         _ => {
-            log::warn!("Unsupported capture format tag={} bits={} float={}", tag, bits, float_mode);
         }
     }
     out
@@ -208,7 +207,6 @@ unsafe fn f32_to_buffer(src: &[f32], dst: *mut u8, frame_count: usize, channels:
             }
         }
         _ => {
-            log::warn!("Unsupported render format tag={} bits={} float={}", tag, bits, float_mode);
         }
     }
 }
@@ -241,15 +239,12 @@ fn open_stream_with_start(device: &IMMDevice, render: bool, start_immediately: b
 
         let (native_format, sample_rate, channels, bits_per_sample, format_tag, sub_format) = match init_result {
             Ok(()) => {
-                println!("[Resonance] Device accepted preferred format (48kHz f32)");
                 (std::ptr::null_mut(), SAMPLE_RATE, CHANNELS, 32, WAVE_FORMAT_EXTENSIBLE, SUBTYPE_IEEE_FLOAT)
             }
             Err(e) => {
                 let code = e.code().0 as u32;
                 if code == 0x88890008 {
-                    println!("[Resonance] Preferred format unsupported (0x88890008), falling back to native");
                 } else {
-                    println!("[Resonance] Initialize failed with 0x{:08x}, trying native format", code);
                 }
                 let mix_format = client.GetMixFormat()?;
                 if mix_format.is_null() {
@@ -271,10 +266,8 @@ fn open_stream_with_start(device: &IMMDevice, render: bool, start_immediately: b
                     }
                 };
 
-                let is_float = is_float_format(wFormatTag, &sub);
-                println!("[Resonance] Native format: {}Hz {}ch bits={} tag={} float={}",
-                    nSamplesPerSec, nChannels, wBitsPerSample, wFormatTag, is_float
-                );
+                let _is_float = is_float_format(wFormatTag, &sub);
+
                 client.Initialize(
                     AUDCLNT_SHAREMODE_SHARED,
                     0,
@@ -334,8 +327,7 @@ impl AudioEngineHandle {
         let current_output = Arc::new(Mutex::new(output_id.clone()));
 
         let handle = thread::spawn(move || {
-            if let Err(e) = audio_thread(db_path, input_id, output_id, cmd_rx) {
-                log::error!("Audio thread error: {}", e);
+            if let Err(_e) = audio_thread(db_path, input_id, output_id, cmd_rx) {
             }
         });
 
@@ -599,19 +591,13 @@ fn audio_thread(db_path: std::path::PathBuf, input_id: Option<String>, output_id
         let mut mic_accumulator: Vec<f32> = vec![];
 
         let (mut cap_stream, mut ren_stream) = init_streams(&input_id, &output_id)?;
-        println!("[Resonance] Engine started input={:?} output={:?}", input_id, output_id);
-        if cap_stream.is_none() { println!("[Resonance] WARNING: No capture stream"); }
-        if ren_stream.is_none() { println!("[Resonance] WARNING: No render stream"); }
 
         let mut mon_stream = match get_default_device(eRender) {
             Ok(d) => match open_stream(&d, true) {
-                Ok(s) => {
-                    println!("[Resonance] Monitor: {}Hz {}ch float={}", s.sample_rate, s.channels, is_float_format(s.format_tag, &s.sub_format));
-                    Some(s)
-                }
-                Err(e) => { println!("[Resonance] Monitor failed: {}", e); None }
+                Ok(s) => Some(s),
+                Err(_) => None,
             },
-            Err(e) => { println!("[Resonance] Monitor device failed: {}", e); None }
+            Err(_) => None,
         };
 
         let (mixer_sr, mixer_ch) = match &ren_stream {
@@ -642,7 +628,6 @@ fn audio_thread(db_path: std::path::PathBuf, input_id: Option<String>, output_id
                                     entry
                                 }
                                 Err(e) => {
-                                    log::warn!("Failed to decode {}: {}", sound.path, e);
                                     continue;
                                 }
                             }
@@ -651,7 +636,6 @@ fn audio_thread(db_path: std::path::PathBuf, input_id: Option<String>, output_id
                         let settings = match db::get_settings(&conn) {
                             Ok(s) => s,
                             Err(e) => {
-                                log::warn!("Failed to load settings for playback: {}", e);
                                 continue;
                             }
                         };
@@ -663,7 +647,6 @@ fn audio_thread(db_path: std::path::PathBuf, input_id: Option<String>, output_id
                         }
 
                         if !settings.overlap_enabled {
-                            println!("[Resonance] overlap disabled: stopping all sounds before playing {}", req.sound_id);
                             mixer.stop_all();
                             let old_playbacks = std::mem::take(&mut active_playbacks);
                             for (_, workers) in old_playbacks {
@@ -759,13 +742,10 @@ fn audio_thread(db_path: std::path::PathBuf, input_id: Option<String>, output_id
                         ren_stream = r;
                         mon_stream = match get_default_device(eRender) {
                             Ok(d) => match open_stream(&d, true) {
-                                Ok(s) => {
-                                    println!("[Resonance] Monitor reopened: {}Hz {}ch", s.sample_rate, s.channels);
-                                    Some(s)
-                                }
-                                Err(e) => { println!("[Resonance] Monitor restart failed: {}", e); None }
+                                Ok(s) => Some(s),
+                                Err(_) => None,
                             },
-                            Err(e) => { println!("[Resonance] Monitor device failed: {}", e); None }
+                            Err(_) => None,
                         };
                     }
                 }
@@ -926,23 +906,17 @@ fn init_streams(input_id: &Option<String>, output_id: &Option<String>) -> Result
 
     let cap_stream = match cap_device {
         Ok(d) => match open_stream(&d, false) {
-            Ok(s) => {
-                println!("[Resonance] Capture stream opened: {}Hz {}ch bits={} tag={} float={}", s.sample_rate, s.channels, s.bits_per_sample, s.format_tag, is_float_format(s.format_tag, &s.sub_format));
-                Some(s)
-            }
-            Err(e) => { println!("[Resonance] ERROR: Failed to open capture stream: {}", e); None }
+            Ok(s) => Some(s),
+            Err(_) => None,
         },
-        Err(e) => { println!("[Resonance] ERROR: Failed to get capture device: {}", e); None }
+        Err(_) => None,
     };
     let ren_stream = match ren_device {
         Ok(d) => match open_stream(&d, true) {
-            Ok(s) => {
-                println!("[Resonance] Render stream opened: {}Hz {}ch bits={} tag={} float={}", s.sample_rate, s.channels, s.bits_per_sample, s.format_tag, is_float_format(s.format_tag, &s.sub_format));
-                Some(s)
-            }
-            Err(e) => { println!("[Resonance] ERROR: Failed to open render stream: {}", e); None }
+            Ok(s) => Some(s),
+            Err(_) => None,
         },
-        Err(e) => { println!("[Resonance] ERROR: Failed to get render device: {}", e); None }
+        Err(_) => None,
     };
 
     Ok((cap_stream, ren_stream))
